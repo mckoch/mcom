@@ -1,4 +1,4 @@
-#The initial version of the MicroContentObjectModel MCOM and its basic classes. The code published for now uses *Pseudocode* for PHP and JavaScript. AS IS, IT WILL NOT WORK IN ANY PROGRAMMING ENVIRONMENT EXCEPT YOUR BRAIN. But the code should give you a rough idea and taste of the structure, logic and usage of MCOM objects along with common AJAX techniques. 
+#The initial version of the MicroContentObjectModel MCOM and its basic classes for MicroContentObject. The code published for now uses *Pseudocode* for PHP and JavaScript. AS IS, IT WILL NOT WORK IN ANY PROGRAMMING ENVIRONMENT EXCEPT YOUR BRAIN. But the code should give you a rough idea and taste of the structure, logic and usage of MCOM objects along with common AJAX techniques. 
 
 = XML style description of MCO =
 
