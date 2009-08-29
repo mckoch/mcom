@@ -1,2 +1,2 @@
-#labels Phase-Implementation
+#labels Phase-Implementation,Deprecated
 #deprecated shorthand for Active Blog Objects. Please see MicroContentObjectModel.
