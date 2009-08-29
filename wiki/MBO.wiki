@@ -1,2 +1,2 @@
-#labels Deprecated
+#labels Phase-Implementation
 # deprecated shorthand for Master Blog Object. Please see MicroContentObject
