@@ -1,0 +1,134 @@
+#The initial version of the MicroContentObjectModel MCOM and its basic classes for MicroContentObject. The code published for now uses **Pseudocode** for PHP and JavaScript. AS IS, IT WILL NOT WORK IN ANY PROGRAMMING ENVIRONMENT EXCEPT YOUR BRAIN. But the code should give you a rough idea and taste of the structure, logic and usage of MCOM objects along with common AJAX techniques.
+
+# XML style description of MCO #
+
+This is the minimum required to build and transfer an MCO. This no DTD, but kind of template.
+```
+<document>
+   <header>
+     <title> this.title </title>
+     <URI> this.URI </URI>
+     <MessageURL> this.messageURL </MessageURL>
+     </header>
+     <body> this.content </body>
+     <related>
+         <item> this.relations(0) </item>
+         <item> this.relations(1) </item>
+         <item> this.relations(2) </item>
+     </related>
+</document>
+```
+Regarding the document body, [CDATA](CDATA.md) should be used: data is not to be parsed by the XML interpreter, but what we ask the clients browser to display as a certain object within DOM.
+!!Example 1
+A simple hyperlink like
+```
+<a href = "http://somehost/somedirectory/index.html#something"
+alt= "some brief text">some description</a>
+```
+will transform into the following object:
+```
+<document>
+     <header>
+         <title>some brief text</title>
+         <URI>http://somehost/somedirectory/index.html#something</URI>
+         <MessageURL></MessageURL>
+     </header>
+     <body>
+     [CDATA]<a href = "http://somehost/somedirectory/index.html#something"
+ alt= "some brief text">some description</a>[/CDATA]
+     </body>
+     <related>
+         <item>http://object.which/links/to/this.htm</item>
+     </related>
+</document>
+```
+!!Example 2
+An image, i.e.
+```
+<img src="http://somewhere/image.jpg" alt="a nice image">
+```
+will be described like this:
+```
+<document>
+    <header>
+        <title>a nice image</title>
+        <URI>http://somewhere/image.jpg</URI>
+        <MessageURL></MessageURL>
+     </header>
+     <body>
+        [CDATA]<img src="http://somewhere/image.jpg"
+ alt="a nice image">[/CDATA]
+     </body>
+     <related>
+           <item>http://page/contains/this/image.html</item>
+      </related>
+</document>
+```
+Regarding the (potential huge) size of binary content, an attribute and resulting tag like `<bodysize>` may be required.
+!!Example 3
+A full entry from a weblog is converted to an MCO:
+```
+<document>
+      <header>
+           <title>An entry in this weblog</title>
+           <URI>http://myweblog/permalinks.php?myID=11</URI>
+           <MessageURL>http://myweblog/rpc.php?myID=11</MessageURL>
+      </header>
+      <body>
+           [CDATA]
+ <p>Oh my dear, <a href="http://thissite/index.php?item=100">this entry</a>
+ seems true. If I had ever read about <a href="http://anysite/permalink=122">
+ at Bison'S</a> before... btw. I found this image: <br>
+ <img src="http://anway/image.jpg"></p>
+ [/CDATA]
+      </body>
+      <related>
+           <item>http://page/contains/linktothis.html</item>
+           <item>http://thissite/index.php?item=100</item>
+           <item>http://anysite/permalink=122</item>
+           <item>http://anway/image.jpg</item>
+      </related>
+</document>
+```
+Please notice: the array of items is added "automagically" by the controller!
+For this, he conveniently tries to parse the body... and, of course, you may use a specialised controller (serverside or as part of the view) to transform http requests of properly tagged blog entries to MCOs.
+
+!!Example 4
+Even the smallest blog provides categories... no need for this special property.
+Simply use keywords as URI to create category MCOs. Add to the array of
+relatives in Example 3:
+```
+ <related>
+      <item>http://page/contains/linktothis.html</item>
+      <item>http://thissite/index.php?item=100</item>
+      <item>http://anysite/permalink=122</item>
+      <item>http://anway/image.jpg</item>
+      <item>keyword</item>
+      <item>category</item>
+ </related>
+```
+Since 'http://myweblog/permalinks.php?myID=11' is the permalink to this entry, http://myweblog/rpc.php?myID=11' its API for this entry. At this time (I think ?;-)) there seems no way to use a simple convention to build queries on items 'keyword' and 'category'. By default, the controller has to deliver an object based on a translation from 'keyword, category' to appropiate entry IDs. These entries contain information about all known (at least local) entries related to 'keyword, category' on your server. So the object representing a collection of categorized MCOs for 'keyword' may be:
+```
+<document>
+      <header>
+           <title>keyword</title>
+           <URI>http://myweblog/permalinks.php?myID=keyword</URI>
+           <MessageURL>http://myweblog/rpc.php?myID=keyword</MessageURL>
+      </header>
+      <body>
+           [CDATA]
+ <p>This image describes best what this category 'category' is all about:<br />
+ <img src="http://anway/image.jpg" /></p>
+           [/CDATA]
+      </body>
+      <related>
+           <item>http://page/contains/linktothis.html</item>
+           <item>http://anway/image.jpg</item>
+           <item>http://myweblog/permalinks.php?myID=12</item>
+           <item>http://myweblog/permalinks.php?myID=17</item>
+           <item>http://myweblog/permalinks.php?myID=19</item>
+           <item>http://yourweblog/categorycontroller/category</item>
+      </related>
+</document>
+```
+By default, the controller application (i.e. [[Controller - Beispiel](Pseudocode.md)]) should search for an entry with the title 'keyword' if given a non-numerical ID.

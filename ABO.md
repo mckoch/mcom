@@ -1,0 +1,1 @@
+#deprecated shorthand for Active Blog Objects. Please see MicroContentObjectModel.
